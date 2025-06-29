@@ -1,10 +1,22 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./MatchForm.css"; // Import the custom CSS
+import "./MatchForm.css"; // Make sure this file exists and is styled properly
 
 function MatchForm() {
-  const [prefs, setPrefs] = useState({ walkability: 5, safety: 5, affordability: 5 });
+  const [prefs, setPrefs] = useState({
+    walkability: 5,
+    safety: 5,
+    affordability: 5,
+  });
   const [results, setResults] = useState([]);
+
+  const handleChange = (key, value) => {
+    const num = parseInt(value, 10);
+    setPrefs((prev) => ({
+      ...prev,
+      [key]: isNaN(num) ? "" : num,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,16 +37,14 @@ function MatchForm() {
         <form onSubmit={handleSubmit} className="form">
           {["walkability", "safety", "affordability"].map((key) => (
             <div key={key} className="form-group">
-              <label>{key} (1-10)</label>
+              <label>{key.charAt(0).toUpperCase() + key.slice(1)} (1–10)</label>
               <input
                 type="number"
                 min="1"
                 max="10"
                 value={prefs[key]}
-                onChange={(e) => {
-                  const val = parseInt(e.target.value, 10);
-                  setPrefs({ ...prefs, [key]: isNaN(val) ? 1 : val });
-                }}
+                onChange={(e) => handleChange(key, e.target.value)}
+                required
               />
             </div>
           ))}
